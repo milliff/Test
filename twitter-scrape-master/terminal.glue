@@ -1,0 +1,14 @@
+ █ [ /Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master ] ls
+1_all_tweets_2018-04-23 12:32:14.100807.csv
+README.md
+__pycache__
+all_tweets.csv
+dump.py
+private.py
+requirements.txt
+scraper.py
+settings.py
+terminal.glue
+tweets.csv
+tweets.db
+
