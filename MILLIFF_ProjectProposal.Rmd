@@ -1,0 +1,316 @@
+---
+title: "17.806 - Project Proposal"
+author: "Aidan Milliff"
+date: "March 23, 2018"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    citation_package: natbib
+    fig_caption: yes
+    fig_height: 4
+  html_document: default
+  number_sections: T
+header-includes: \usepackage{amsmath, amsthm, amssymb, cancel, MnSymbol, color}
+bibliography: Proposal.bib
+biblio-style: apsr
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F, error = F, tidy = F, 
+                      tidy.opts=list(width.cutoff=50), collapse = T,
+                      warning=FALSE,
+                      error=FALSE,
+                      message = FALSE, comment = "",
+                      fig.cap = " ",
+                      cache = TRUE)
+```
+
+```{r, echo = F}
+#### Pre-Process Data, separate into documents ####
+library(stringr)
+library(dplyr)
+library(tidyr)
+library(tidytext)
+
+# Load Documents Separated by Respondent and Interview Segment
+load("/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/ChicagoDat/separated.RData")
+
+# Remove Questions from the documents
+t.noq <- list()
+
+for(i in 1: length(t.sep)){                                                               # Remove statements with questions, Remove headers, Remove random crap
+  tmp     <- t.sep[[i]]
+  t.noq[[i]] <- tmp[grepl("\\?$", tmp)==F  & grepl("^$", tmp)==F & grepl("^<", tmp)==F]
+}
+names(t.noq) <- names(t.sep)                                                              # Name the docs in a way that will be useful in the next step
+
+# Tidy the documents (paragraph level)
+
+grafs <- data.frame()
+
+for (i in 1:length(t.noq)){
+  dat  <- as.data.frame(t.noq[[i]], stringsAsFactors = F)
+  df1  <- cbind.data.frame(id   = rep(names(t.noq)[i], times = nrow(dat)),
+                           text = dat,
+                           stringsAsFactors = F)
+  grafs <- rbind.data.frame(grafs, df1, stringsAsFactors = F) 
+}
+
+colnames(grafs) <- c("id", "text")
+
+# Remove too-short Paragraphs
+grafs$text <- as.character(grafs$text)
+grafs      <- grafs[nchar(grafs$text) > 20,]
+
+# Back out respondent IDs / Segment IDs
+
+grafs <- grafs %>% mutate(resp = str_extract(grafs$id, "(?<=\\.)(.*)(?=\\.)"),
+                          seg  = str_sub(grafs$id, -1, -1))
+
+
+
+# Tidy the documents (sentence level)
+  
+sents <- data.frame()
+
+for (i in 1:length(t.noq)){
+  str  <- strsplit(t.noq[[i]], "\\. |\\!|\\?")                                    
+  dat  <- data.frame()
+  
+  for(j in 1:length(str)){
+    df  <- as.data.frame(str[[j]])
+    colnames(df) <- "text"
+    dat <- rbind.data.frame(dat, df) 
+  }
+  
+  df1  <- cbind.data.frame(id   = rep(names(t.noq)[i], times = nrow(dat)),
+                           text = dat)
+  
+  sents <- rbind.data.frame(sents, df1) 
+}
+
+# Remove too-short Sentences
+sents$text <- as.character(sents$text)
+sents      <- sents[nchar(sents$text) > 20,]
+
+# Back out respondent IDs / Segment IDs
+
+sents <- sents %>% mutate(resp = str_extract(sents$id, "(?<=\\.)(.*)(?=\\.)"),
+                          seg  = str_sub(sents$id, -1, -1))
+
+
+
+#### Clean the Text ####
+sents$text <- tolower(sents$text)
+grafs$text <- tolower(grafs$text)
+```
+
+```{r, echo = F}
+#### Emotion Scoring Attempt ####
+
+library(syuzhet)
+# Emotions
+
+emo_graf <- get_nrc_sentiment(grafs$text)
+emo_graf <- cbind(emo_graf, grafs$resp, grafs$seg)
+emo_graf <- emo_graf[emo_graf$positive!=0,]
+
+emo_sent <- get_nrc_sentiment(sents$text)
+emo_sent <- cbind(emo_sent, sents$resp, sents$seg)
+emo_sent <- emo_sent[emo_sent$positive!=0,]
+```
+
+# Motivation and Contribution
+
+As text analysis models are becoming more common in political science work, there is also a growing interest among political scientists who study affect and emotion in analyzing sentiment and emotional content of text. Emotional responses to a variety of stimuli (like, for example, responding to violence or the threat of violence with anger or fear, respectively) are connected to attitudinal and behavioral outcomes that political scientists care about, like the drive to punish perpetrators of violence [@Goldberg1999; @GarciaPonce2017; @Nelissen2009], engage in inter-group violence [@Petersen2002; @Claassen2013], flee danger [@Thagard2014; @Petersen2006], or change one's policy preferences [@Bonanno2006; @Landau-Wells2018]. Measuring the emotions of individuals, however, remains one of the principal difficulties in this sort of research: clinical gold-standards for measurement like the PANAS [@Watson1988] and STAXI [@Vagg2000] can't be easily administered at scale on representative populations in some contexts that are substantively interesting; perhaps most obviously, emotion self-reporting cannot be gathered from individuals who are dead or otherwise inaccessible. 
+
+The ability to recover reliable data on emotional state from text would open up new opportunities for researching the political causes and consequences of emotions in situations where researchers currently lack the access necessary to either conduct face-to-face interviews or gather data using a platform like Mechanical Turk. Of particular interest is the ability to recover data on emotional states from sources like oral histories, testimony, archives of truth and reconciliation commissions, correspondence, and other sorts of un-structured text. 
+
+## Recovering Emotion from Text
+
+Researchers in political science and computer science have developed a variety of methods to characterize the sentimental content of documents. These methods can be split into three subsets. The most straightforward of these methods uses pre-built dictionaries that assign sentiment value to words, and then search through documents for those keywords [@Mohammad2010]. Other methods use either supervised or unsupervised statistical learning. In supervised learning, it seems like most of the cutting edge research focuses on a few specific types of text data (social media posts, news headlines, and Brothers Grimm fairy tales [@Ovesdotter-Alm2013] are popular corpora for building and testing these models) where documents are relatively short and, in the case of both social media and news headlines, subject to strict structural constraints [@Strapparava2008; @Goncalves2013]. Further, many recent improvements focus on "sentiment," a simple valence dimension of emotion, rather than categorically separate emotions like anger, fear, happiness, disgust, etc. [@Thelwall2010].
+
+Below, I show a simple test of two of these methods (a keyword-search method and an unsupervised method) on interview data about emotional responses to violent trauma. Neither do a very good job of using paragraph and sentence level "scores" to recover the interview respondent's self-reports about their emotional state. This suggests that a new approach, I propose a supervised learning approach, is needed to make progress toward a emotion recovery tool that is reliable enough for use on corpora like oral histories. 
+
+```{r, echo = F, fig.cap="Results of the Keyword Search Method"}
+load("/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/ChicagoDat/DATA031318.RData")
+###### Generate summarys for each respondent #######
+sent_groups <- emo_sent %>% group_by(`sents$resp`) %>% 
+                    summarize(anger = mean(anger),
+                           fear = mean(fear),
+                           sadness = mean(sadness),
+                           disgust = mean(disgust),
+                           positive = mean(positive),
+                           negative = mean(negative))
+
+colnames(sent_groups)[1] <- "ID"
+
+graf_groups <- emo_graf %>% group_by(`grafs$resp`) %>% 
+                  summarize(anger = mean(anger),
+                           fear = mean(fear),
+                           sadness = mean(sadness),
+                           disgust = mean(disgust),
+                           positive = mean(positive),
+                           negative = mean(negative))
+
+colnames(graf_groups)[1] <- "ID" 
+
+
+dat.extract <- dat[which(dat$ID!=22), c("ID", "P1.Angry", "P1.Afraid", "P1.Anger.Index", "P1.Fear.Index", "P1.Positive.Affect", "P1.Negative.Affect")]
+
+graf <-  merge(x = graf_groups, y = dat.extract, by = "ID", all.x = T)
+
+sent <-  merge(x = sent_groups, y = dat.extract, by = "ID", all.x = T)
+
+####### Test correlation between summaries and PANAS #########
+
+sent_mod1 <- lm(scale(P1.Angry) ~ scale(anger), data = sent)
+sent_mod2 <- lm(scale(P1.Anger.Index) ~ scale(anger), data = sent)
+
+sent_Paff <- lm(scale(P1.Positive.Affect) ~ scale(positive), data = sent)
+sent_Naff <- lm(scale(P1.Negative.Affect) ~ scale(negative), data = sent)
+
+graf_mod1 <- lm(scale(P1.Angry) ~ scale(anger), data = graf)
+graf_mod2 <- lm(scale(P1.Anger.Index) ~ scale(anger), data = graf)
+
+graf_Paff <- lm(scale(P1.Positive.Affect) ~ scale(positive), data = graf)
+graf_Naff <- lm(scale(P1.Negative.Affect) ~ scale(negative), data = graf)
+
+### Extract things to plot ###
+
+m2s_coe   <- c(sent_mod2$coefficients[2], sqrt(diag(vcov(sent_mod2)))[2])
+m1s_coe   <- c(sent_mod1$coefficients[2], sqrt(diag(vcov(sent_mod1)))[2])
+paffs_coe <- c(sent_Paff$coefficients[2], sqrt(diag(vcov(sent_Paff)))[2])
+naffs_coe <- c(sent_Naff$coefficients[2], sqrt(diag(vcov(sent_Naff)))[2])
+
+
+m2g_coe   <- c(graf_mod2$coefficients[2], sqrt(diag(vcov(graf_mod2)))[2])
+m1g_coe   <- c(graf_mod1$coefficients[2], sqrt(diag(vcov(graf_mod1)))[2])
+paffg_coe <- c(graf_Paff$coefficients[2], sqrt(diag(vcov(graf_Paff)))[2])
+naffg_coe <- c(graf_Naff$coefficients[2], sqrt(diag(vcov(graf_Naff)))[2])
+
+df           <- rbind(m1s_coe, m2s_coe, paffs_coe, naffs_coe, m1g_coe, m2g_coe, paffg_coe, naffg_coe)
+df           <- as.data.frame(df)
+colnames(df) <- c("est", "se")
+df$Label     <- as.factor(rep(c("Anger", "Anger (on Index)", "Positive Affect", "Negative Affect"), times = 2))
+df$type      <- as.factor(rep(c("Sentence", "Paragraph"), each = 4))
+df$lb        <- as.numeric(df$est - 1.96*df$se)
+df$ub        <- as.numeric(df$est + 1.96*df$se)
+
+### Plot ###
+library(ggplot2)
+library(ggthemes)
+
+ggplot(data = df, aes(x = Label, y = est, group = type, color = type)) + geom_pointrange(aes(ymin = lb, ymax = ub), position = position_dodge(width = 0.2)) + theme_minimal() +
+  geom_hline(yintercept = 0, lty = 3) +
+  labs(title = "Bivariate Associations between Self-Reports and Dictionary Method",
+       subtitle = "For sentence and paragraph data",
+       y = "Standardized Estimates",
+       x = "Emotion",
+       color = "Data") + scale_color_ptol()
+
+```
+
+# Data/Figures - Problems with Existing Methods
+
+One common keyword-search method is an `R` implementation of Mohammad and Turney's NRC Emotion dictionary [@Mohammad2015; @Mohammad2016]. I used the NRC dictionary to score each sentence and each paragraph (two separate datasets that ultimately contain the same text) in my interview data, and evaluated how well the dictionary-based scores correlate with interview respondent's self-reports on their emotional state. Figure 1 shows the results. Neither paragraph nor sentence level scores for anger and negative/positive affect recover respondent's self reports of anger, an index created from respondent's self reports on four anger-related emotions (hostility, upset-ness, irritability, anger), or their "negative affect"---a summary score generated using the PANAS self-reporting instrument [@Watson1988]. Paragraph level scores for positive affect do show a statistically significant bivariate association with PANAS positive affect, but sentence level scores do not. Given these results, it is clear that dictionary methods alone do not accomplish intended task.
+
+Another increasingly common method is the structural topic model or STM [@Roberts2013; @Roberts2014]. STM, like all topic models, allows observed semantic data to be a function of some unobserved latent variable, in this case the “topic” the language is describing. It assumes that each document is a mixture of these unobserved groups, and that a particular word’s appearance in the document can be attributed to the group that “explains” the appearance of that word [@Blei2003]. I estimated a structural topic model on document term matrices created from the paragraph-level interview data. Two of the ten topics estimated were strongly characterized by emotional language: Topic 6 mainly described fear, topic 8 described anger (Table 1). I estimated the association between self-reported fear and anger scores (both single-emotion scores and indices for fear-related and anger-related emotions) and the prevalence of topics 6 and 8, respectively, in a particular paragraph. Figure 2 shows that, while self-reported emotional scores are significantly associated with topic prevalence for both the "fear" topic and the "anger" topic, the direction of the effect is the opposite depending on whether topic prevalence is predicted using a single emotion score, or an index of clearly related emotions. Clearly the STM is telling us *something* about the latent variable of self-reported emotions, but the opposite signs that this model shows for ostensibly similar predictors suggests that this would probably not be suitable for recovering emotion scores from new text.
+
+
+| Topic       | Labels (FREX Score)                            |
+|-------------|------------------------------------------------|
+| 6 - *Fear*  | god, scare, fear, afraid, investig, cop, van   |
+| 8 - *Anger* | feel, angri, anger, parent, shouldv, can, felt |
+
+
+```{r, echo = F, results = 'hide'}
+library(stm)
+
+### Fit an STM on Paragraph Data ###
+# Create DTMs
+paras <- textProcessor(grafs$text, metadata = cbind.data.frame(resp = grafs$resp, seg = grafs$seg), 
+                       customstopwords = c("know", "like", "just", "dont", "didnt",
+                                           "get", "that", "thing", "want", "said", "say",
+                                           "think", "got", "people", "told", "tell"))
+
+# Preserve kept documents
+texts <- grafs$text[-paras$docs.removed] 
+
+# Fit the model
+
+#fit_graf <- stm(documents = paras$documents,
+#            vocab = paras$vocab,
+#            K = 10,
+#            data = paras$meta,
+#            prevalence = ~ resp)
+
+# Load from save
+load("/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/ChicagoDat/fit_graf.RData")
+
+# labelTopics(fit_graf)
+
+# Get just the anger scores expanded 
+#ds <- cbind.data.frame(resp = dat$ID, 
+#                       P1.Angry = dat$P1.Angry, 
+#                       P1.Anger.Index = dat$P1.Anger.Index, 
+#                       P1.Afraid = dat$P1.Afraid,
+#                       P1.Fear.Index = dat$P1.Fear.Index)
+
+#covars <- left_join(paras$meta, ds)
+#covars[is.na(covars)] <- 0 
+
+load("/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/ChicagoDat/covars.RData")
+
+### Estimate Effects ###
+
+est.fear <- estimateEffect(6:8 ~ P1.Fear.Index + P1.Afraid, fit_graf, metadata = covars)
+fear6    <- summary(est.fear)$tables[[1]] #sig!
+
+est.anger <- estimateEffect(6:8 ~ P1.Anger.Index + P1.Angry, fit_graf, metadata = covars)
+anger8    <- summary(est.anger)$tables[[3]] #notsig!
+```
+
+
+```{r, echo = F, fig.cap="Association between Self Reports and Topic Prevalence"}
+fear.index  <- c(fear6[2], fear6[5])
+afraid      <- c(fear6[3], fear6[6])
+anger.index <- c(anger8[2], anger8[5])
+angry       <- c(anger8[3], anger8[6])
+
+plot <- rbind(fear.index, afraid, anger.index, angry)
+plot <- as.data.frame(plot)
+colnames(plot) <- c("est", "se")
+plot$var       <- c("Fear Index", "Afraid", "Anger Index", "Angry")
+plot$response  <- c("Topic 6 - Fear", "Topic 6 - Fear", "Topic 8 - Anger", "Topic 8 - Anger")
+plot$ub        <- plot$est + 1.96*plot$se
+plot$lb        <- plot$est - 1.96*plot$se
+plot$var       <- factor(plot$var, levels = c("Fear Index", "Afraid", "Anger Index", "Angry"))
+
+ggplot(plot, aes(x = var, y = est, color = response)) + geom_pointrange(aes(ymin = lb, ymax = ub)) +
+  geom_hline(yintercept = 0, lty = 3) +
+  geom_vline(xintercept = 2.5, lty = 1) +
+  theme_minimal() + scale_color_ptol() +
+  labs(title = "Association between Topic Model and Self-Reported Emotions",
+       subtitle = "Paragraph-level data",
+       x = "Predictor (Self Reports)",
+       y = "Coefficient Estimate",
+       color = "Response (Topic)")
+  
+```
+
+## Proposed Project
+
+For this project, I propose to use supervised ML techniques on a corpus of text data that I collected through in-person interviews about victimization and emotional response. While it would ultimately be ideal to improve on the tests shown above and model self-reported emotion as a latent variable expressed in the full text of a long document (like an entire interview transcript), the data I have available does not include enough independent observations to do this reliably.
+
+It should still be a useful improvement, though, to show that supervised learning techniques can be used to automate the work that currently has to be done by hand, predicting emotional content in sentences or paragraphs of a corpus with a model trained on some small proportion of that corpus.
+
+I aim to use interview transcripts from Chicago to test two separate things:
+
+1. Can a model trained on labeled sentences or paragraphs randomly selected from a single interview accurately predict the labels for other sentences or paragraphs *within the same interview*? In other words, can researchers summarize the emotional content of a long document by labeling a small part of the document and using a supervised learning algorithm to label the rest?
+
+2. Can a model trained on labeled sentences or paragraphs from a single interview accurately predict the labels for sentences and paragraphs *in interviews with other respondents that follow the same format and cover the same topics*? In other words, can researchers summarize the emotional content of a set of similarly structured documents with similar content by labeling a small subset of the documents and using a supervised learning algorithm to label the others?
+
+I plan to label my corpus of interview data (32 interviews, ~10,500 sentences, ~2,200 paragraphs) using `prodigy,` which implements a convolutional neural net to speed labeling and decrease the opportunity for coder error. After labeling the data, I plan to use supervised methods to answer the two questions above.
+

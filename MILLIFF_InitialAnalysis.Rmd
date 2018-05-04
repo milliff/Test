@@ -1,0 +1,253 @@
+---
+title: "17.806 - Update/Initial Analysis"
+author: "Aidan Milliff"
+date: "April 29, 2018"
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+    fig_height: 4
+    latex_engine: pdflatex
+  number_sections: T
+  html_document: default
+header-includes: \usepackage{amsmath, amsthm, amssymb, cancel, MnSymbol, color}
+bibliography: Proposal
+biblio-style: apsr
+urlcolor: blue
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F, error = F, tidy = F, 
+                      tidy.opts=list(width.cutoff=50), collapse = T,
+                      warning=FALSE,
+                      error=FALSE,
+                      message = FALSE, comment = "",
+                      fig.cap = " ",
+                      cache = TRUE)
+```
+
+*Dear In Song and Andy: This write-up shows the progress I have made on the new project that In Song suggested when we met ~2 weeks ago. There is certainly much more to do in terms of analysis, most of the time I've been able to spend on this project in the past two weeks has been spent creating a python scraper for tweets with emojis, running that scraper slowly over time to stay under Twitter's API rate limits, and then dealing with character encoding issues. The rate of progress should speed up dramatically in the next two weeks now that my second year paper is finished.*  
+
+# Motivation/Description of New Project
+
+There is a growing interest among political scientists who study affect and emotion in analyzing sentiment and emotional content of text. Emotional responses to a variety of stimuli (like, for example, responding to violence or the threat of violence with anger or fear, respectively) are key mechanisms for attitudinal and behavioral outcomes that political scientists care about, like the drive to punish perpetrators of violence [@Goldberg1999; @GarciaPonce2017; @Nelissen2009], engage in inter-group violence [@Petersen2002; @Claassen2013], flee danger [@Thagard2014; @Petersen2006], or change one's policy preferences [@Bonanno2006; @Landau-Wells2018]. Measuring the emotions of individuals is a necessary task for testing and building new theories about these outcomes. Such measurement, however, remains very difficult in field settings: clinical gold-standards for measurement like the PANAS [@Watson1988] and STAXI [@Vagg2000] can't be easily administered at scale on representative populations in some contexts that are substantively interesting; perhaps most obviously, emotion self-reporting cannot be gathered from individuals who are dead or otherwise inaccessible. 
+
+The ability to recover reliable data on emotional state from text would open up new opportunities for researching how emotions are connected to outcomes like public policy preferences, participation in violence, flight from war, and others. Of particular interest is the ability to recover data on emotional states from sources like oral histories, testimony, or archives of truth and reconciliation commissions. Work in computer science offers partial solutions---many models exist to code both sentiment (positive or negative) in things like Amazon.com reviews, and tweets [@Dinsoreanu2014; @Hassan2017b]. New work has also started to look at coding emotion (anger, fear, sadness, happiness, etc.) from tweets, using emojis as "labels" for the author's emotions [@Felbo2017].  This project begins from the same basic premise: emoji-labeled documents are a potentially powerful tool for training text classifiers to detect the emotional content of text. I plan to develop a classifier that can predict which emoji label (or none at all) is most likely to fit a short document. For this project, I focus on labels/emojis that I find to be clearly related to two major negative emotions: Fear and Anger (see Figure 1). The eventual goal of this project is to test the classifier out-of-sample on data that are relevant to the study of fear and anger in politics. Since so few of those relevant documents are labeled, though, the classifier will be developed using a more available source: Tweets that include representative emojis.
+
+![Six emojis labeled with the official descriptions written by the Unicode Consortium, the organization that maintains the "Unicode Standard" for representing text in modern software. Emojis become widely available (and thus widely used) only once they are adopted into the Unicode Standard. Because the official descriptions are written when the emojis are first adopted, the descriptions in this figure may not fit the actual usage very well at all.](emojis.png)
+
+# Description of Training/Test Data
+
+The classifier, proposed above, will be trained and tested on data from Twitter. The free version of Twitter's API has a number of limitations, but it does still allow for filtering based on a number of search terms. For this project, I use `Tweepy,` a `Python 3` library to connect to the free Twitter API, collect tweets that meet my filter conditions along with the metadata for those tweets, and store the text and metadata in csv files. I used RegEx methods to extract the emoji-labels (represented as UTF-8 characters) from the text and represent them as metadata. I left other emojis in the text as UTF-8 strings to be attributes for the classifier; the "label" emojis are erased from the text such that they cannot be used to predict their own existence.[^1] Once this labeling has been done, the corpus of tweets can be treated like any other corpus of documents for the purposes of text analysis. Because the documents are tweets, the corpus will have some unusual words. Because the emojis are still represented as UTF-8 strings, the corpus will also have some unusual backslash-escaped strings.
+
+Since the goal of this project is to develop a tool that uses emojis as emotion labels, tweets were filtered in order to contain one of the emojis shown above in Figure 1. Using the free version of the Twitter API has posed some issues. First, tweets can be filtered by only one attribute per "stream". Because I filter tweets to have emojis, I cannot simultaneously geo-filter or time filter (all tweets are vacuumed up as they are posted, I have made sure to run the scraper at different times of day and night to avoid introducing a bias on this basis). Second, Twitter's API also does not seem to follow filtering requests very rigidly---of the 35,161 unique tweets that have been scraped so far, 25.2% contain none of the emojis shown in Figure 1. Finally, the API does not filter out retweets. There is clear evidence of bot retweeting activity in the data I have collected so far. For example, one post (a [meme](https://twitter.com/ItsBruhMan/status/988157695256616960) about Yeezy shoes) appeared in the dataset over 1,500 times retweeted by different accounts with few followers. Because of this, only about 54% of the 65,000 tweets scraped so far are unique tweets. Duplicates have been removed because they would cause the model to overfit mostly to memes.
+
+Speech on Twitter is notably different from the more formal written language that I eventually hope to be able to use the classifier for. It makes much more use of slang and abbreviations, and is substantially more vulgar. It remains to be seen how much of an impediment these different semantic patterns are for out-of-sample prediction. Figure 2 shows a word cloud of the highest-frequency terms from the full set of ~35k unique tweets. Since 75% of the tweets are labeled with an emoji that I expect to have to do with anger of fear, it makes sense that anger and fear related words are well represented in the cloud. The rest of this initial analysis shows a first attempt at using a supervised learning technique (linear kernel SVM) to build a classifier for *one* of the emojis in the dataset.
+
+
+```{r, echo = F}
+#### Read in Tweets ####
+# Read all tweets into one DF
+#setwd("~/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/")
+#files  <- list.files(pattern = ".csv")
+#tweets <- do.call(rbind, lapply(files, function(x) read.csv(x)))
+
+# Dump all retweets that are captured multiple times
+library(dplyr)
+
+#tweets <- distinct(tweets, text, .keep_all = T)
+#tweets$text <- as.character(tweets$text)
+```
+
+```{r, echo = F}
+#### Translate the Emojis ####
+# From Kate Lyons github.com/lyons7
+#emoji <- read.csv("/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/emoji_dictionary.csv")
+#emoji$Codepoint <- as.character(emoji$Codepoint)
+
+# Get Codepoints instead of UTF-8
+#library(stringi)
+#tmp <- tweets
+#tmp$text <- stri_escape_unicode(tmp$text)
+#tmp$text <- gsub("\\U000", "U+", tmp$text)
+# Replace Emojis
+#replace <- DataCombine::FindReplace(data = tmp[1:100,], Var = "text",
+#                                    replaceData = emoji,
+#                                    from = "Codepoint", to = "Name", exact = F)
+
+### Try Labeling based on grep ###
+
+#tweets$FACEWITHOPENMOUTH      <- ifelse(grepl("\U0001f62e", tweets$text)==T, 1, 0)
+#tweets$FACEWITHSTEAMFROMNOSE  <- ifelse(grepl("\U0001f624", tweets$text)==T, 1, 0)
+#tweets$ANGUISHEDFACE          <- ifelse(grepl("\U0001f627", tweets$text)==T, 1, 0)
+#tweets$FACESCREAMINGWITHFEAR  <- ifelse(grepl("\U0001f631", tweets$text)==T, 1, 0)
+#tweets$POUTINGFACE            <- ifelse(grepl("\U0001f621", tweets$text)==T, 1, 0)
+#tweets$ANGRYFACE              <- ifelse(grepl("\U0001f620", tweets$text)==T, 1, 0)
+#tweets$POUTINGCATFACE         <- ifelse(grepl("\U0001f63E", tweets$text)==T, 1, 0)
+
+### Remove Emojis that are Labels ###
+
+#tweets$text <- gsub("\U0001f62e", "", tweets$text)
+#tweets$text <- gsub("\U0001f624", "", tweets$text)
+#tweets$text <- gsub("\U0001f627", "", tweets$text)
+#tweets$text <- gsub("\U0001f631", "", tweets$text)
+#tweets$text <- gsub("\U0001f621", "", tweets$text)
+#tweets$text <- gsub("\U0001f620", "", tweets$text)
+#tweets$text <- gsub("\U0001f63E", "", tweets$text)
+#tweets$text <- gsub("https:\\/\\/.*", "", tweets$text)
+#tweets$text <- gsub("RT[^:]*:\\s*", "", tweets$text)
+
+#save(tweets, file = "~/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/tweetdf.RData")
+load("~/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/tweetdf.RData")
+```
+
+```{r, echo = F, fig.cap="Apologies for the vulgarity; tweets connected to the six chosen emojis have a very high concentration of vulgar words. This figure shows a wordcloud with the 100 highest frequency words (excluding common english stopwords) in the 35k tweets collected so far. The words in the cloud have had punctuation removed (supposedly), as well as whitespace, numbers, uppercase letters, and additional stopwords like get and y. The tweets have also been stemmed. This wordcloud does include some words (like the swear words) that are consistent with the idea that the emojis well-represented in the dataset do indeed connect to writing that is about anger and fear. "}
+library(tm)
+library(wordcloud)
+
+corp <- Corpus(VectorSource(tweets$text))
+corp <- tm_map(corp, content_transformer(tolower))
+corp <- tm_map(corp, stripWhitespace)
+corp <- tm_map(corp, removePunctuation)
+corp <- tm_map(corp, removeWords, c(stopwords("english"), "get", "'m", "'ve", "y'", "'", "'s", "'re"))
+corp <- tm_map(corp, stemDocument)
+corpword <- wordcloud(corp, max.words = 100)
+```
+
+# Classifier First Attempt - Face with Steam from Nose
+
+This initial attempt at building a classifier focuses only on predicting whether or not a tweet includes the "Face with Steam from Nose" emoji. First, a portion of the data are split into training and test sets.\footnote{I used only a portion of the dataset to keep the problem-solving and tuning phase of the classifier-building more efficient. The final model will, of course, be fitted on as much data as I can collect and clean.} The training set is made up of the first 15,000 tweets in the cleaned dataset (order in the dataset is random). The test set is the next 5,000 tweets. The training and test sets have punctuation, numbers, and stopwords removed before being used in the model They are stemmed as well. Finally, I remove sparse terms from the Term Document Matrix (TDM) for the training set. After stemming and stopword removal, over 26,000 terms are included in the matrix. Not only do most of these terms occur in very few tweets (thereby not adding much information to the training), the sheer number makes computation very taxing. I remove sparse terms using the `tm` package such that the final TDM has roughly 7,000 terms.
+
+I use the `caret` package to (slowly) fit a Support Vector Machine (SVM) model with a linear kernel, and then use that model to predict whether or not tweets in the test-set include the "Face with Steam from Nose" emoji. The results of this test are presented in Table 1. 
+
+
+
+
+
+```{r, echo = F}
+#### START THE TEXT PROCESSING ####
+library(tm)
+
+### Create a Training Set ###
+#tweet_train <- tweets[1:2000,]
+
+#train_corpus <- Corpus(VectorSource(tweet_train$text))
+#train_dtm    <- DocumentTermMatrix(train_corpus, list(removePunctuation = T,
+#                                          stopwords = T,
+#                                          removeNumbers = T
+#                                          ))
+
+#### Label the Training Set ####
+#train_set <- as.matrix(train_dtm)
+#train_set <- cbind(train_set, tweet_train$ANGRYFACE)
+#colnames(train_set)[ncol(train_set)] <- "y"
+
+#train_set <- as.data.frame(train_set)
+#train_set$y <- as.factor(train_set$y)
+
+
+#### Try the Model ####
+
+# Problem is it's just too rare
+library(caret)
+#angryface_mod <- train(y ~., data = train_set, method = "svmLinear3")
+
+# Test Data
+#tweet_test  <- tweets[2001:3000,]
+#test_corpus <- Corpus(VectorSource(tweet_test$text))
+#test_dtm    <- DocumentTermMatrix(test_corpus, control=list(dictionary = Terms(train_dtm)))
+#test_set    <- as.matrix(test_dtm)
+
+# Predict and Check
+#angryface_result <- predict(angryface_mod, newdata = test_set)
+#accuracy         <- as.data.frame(cbind(prediction = angryface_result, label = tweet_test$ANGRYFACE))
+#accuracy         <- accuracy %>% mutate(prediction = as.integer(prediction) - 1)
+#accuracy$score   <- if_else(accuracy$prediction == accuracy$label, 1, 0)
+
+#round(prop.table(table(accuracy$score)), 3)
+
+
+### Try the whole thing again with a BIGGER training set, and a more common outcome ###
+### Use Quanteda to trim the DFM
+library(quanteda)
+tweet_train   <- tweets[1:15000,]
+train_corpus2 <- Corpus(VectorSource(tweet_train$text))
+train_dtm2    <- DocumentTermMatrix(train_corpus2, control = list(removePunctuation = T,
+                                                                  stopwords = T,
+                                                                  removeNumbers = T,
+                                                                  stemming = T))
+train_dtm2    <- removeSparseTerms(train_dtm2, 0.99991)   # LOL this is a silly amount of sparsity to remove
+train_set2    <- as.matrix(train_dtm2)
+train_set2    <- cbind(train_set2, tweet_train$FACEWITHSTEAMFROMNOSE)
+colnames(train_set2)[ncol(train_set2)] <- "y"
+train_set2    <- as.data.frame(train_set2)
+train_set2$y  <- as.factor(train_set2$y)
+
+# Train the Model
+#steamface_mod <- train(y~., data = train_set2, method = "svmLinear3")
+#save(steamface_mod, file = "~/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/steamface.RData")
+
+load("~/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/steamface.RData")
+# Test Data
+tweet_test    <- tweets[15001:20000,]
+test_corpus2  <- Corpus(VectorSource(tweet_test$text))
+test_dtm2     <- DocumentTermMatrix(test_corpus2, control=list(dictionary = Terms(train_dtm2)))
+test_set2     <- as.matrix(test_dtm2)
+
+# Predict and Check
+## How well does it fit
+steamface_fit <- predict(steamface_mod, newdata = train_set2)
+fit2          <- caret::confusionMatrix(steamface_fit, as.factor(tweet_train$FACEWITHSTEAMFROMNOSE))
+fittab        <- fit2$table
+## How well does it predict
+steamface_result <- predict(steamface_mod, newdata = test_set2)
+accuracy2        <- caret::confusionMatrix(steamface_result, as.factor(tweet_test$FACEWITHSTEAMFROMNOSE))
+tab              <- accuracy2$table
+colnames(tab)    <- c("True Label 0", "True Label 1")
+rownames(tab)    <- c("Predicted Label 0", "Predicted Label 1")
+knitr::kable(tab, title = "Confusion Matrix for Linear SVM Classification of Face with Steam from Nose Emoji", caption = "A confusion matrix for evaluating the performance of the linear kernel SVM model on test data. The on-diagonal cells show the number of tweets in the test dataset that were correctly classified. 75.12% of the 5,000 documents in the test set were correctly classified. The top left cell shows the number of tweets correctly classified as having no steam-face emoji. The bottom right cell shows the number of correctly classified tweets that do have the steam-face emoji. Off-diagonal cells show mis-classifications. We can see from the relative number of false positives (bottom left) to false negatives (top right) that the classifier has much more Type II error (19.8% of the test set) than Type I error (5.8% of the test set). ")
+
+accuracy_2         <- as.data.frame(cbind(text = tweet_test$text, prediction = steamface_result, label = tweet_test$FACEWITHSTEAMFROMNOSE))
+accuracy_2         <- accuracy_2 %>% mutate(prediction = as.integer(prediction) - 1)
+accuracy_2$score   <- if_else(accuracy_2$prediction == accuracy_2$label, 1, 0)
+
+### Plot Output ###
+library(ggplot2)
+library(wordcloud)
+```
+
+The linear kernel SVM model correctly predicts slightly over 75% of the labels in the test set, but has much higher Type II error than Type I error (see Table 1). This overall prediction rate seems reasonable for a very first attempt given that much of the training and test data that is not labeled with the "Face with Steam from Nose" emoji is indeed labeled with another anger emoji. It's reasonable to expect that the SVM would have a hard time differentiating "Face with Steam from Nose" from something like "Angry Face" (see Figure 1). Figures 3 and 4 show the highest frequency terms from the entire dataset that *are* and *are not* (respectively) labeled with the "Face with Steam from Nose" emoji. There are clear similarities in the highest frequency terms, again, likely because the "Face with Steam from Nose" emoji is rhetorically similar to "Angry Face" and "Rage Face". Perhaps before the final analysis, I will focus on collecting more neutral emotion tweets to see if the classifier performs better when being asked to differentiate less subtly.
+
+What's slightly more worrying is the performance of the model on the *training* data. The training set of 15,000 tweets only has 87.8% correctly labeled. It too has much more Type II error (10.7%) than Type I error (1.5%). This suggests the need for future improvement in the model building. The first obvious option is to change kernels to one more suited for text analysis [@Spirling2011]. Another option would be to adopt a different supervised method that allows for boosting---iteratively up-weighting the importance of incorrectly-labeled training data such that the final model fits better to those data. This would potentially solve the Type II error problem (and the overall poor fit to the training data) that appears here. These improvements, plus the addition of yet more raw data and the extension of the model to classify all six emojis from Figure 1 at once, will be the next steps in the project. 
+
+
+```{r, echo = FALSE, fig.cap = "Wordcloud of higest frequency words for tweets that are labeled with the Face with Steam from Nose emoji. Once again, apologies for the vulgarity."}
+# Wordcloud
+tweets_steamface <- tweets[which(tweets$FACEWITHSTEAMFROMNOSE==1),]
+tweets_non       <- tweets[which(tweets$FACEWITHSTEAMFROMNOSE==0),]
+
+steam_corp <- Corpus(VectorSource(tweets_steamface$text))
+steam <- tm_map(steam_corp, content_transformer(tolower))
+steam <- tm_map(steam, stripWhitespace)
+steam <- tm_map(steam, removePunctuation)
+steam <- tm_map(steam, removeWords, c(stopwords("english"), "get", "'m", "'ve", "y'", "'", "'s", "'re"))
+steam <- tm_map(steam, stemDocument)
+madword <- wordcloud(steam, max.words = 100)
+```
+
+
+
+```{r, echo = F, fig.cap = "Wordcloud of higest frequency words for tweets that are NOT labeled with the Face with Steam from Nose emoji. Once again, apologies for the vulgarity. Note that these tweets still have a high frequency of anger words (including the vulgar ones), and that the word cloud does not look extremely different from the word cloud for tweets that are labeled with the emoji in question. This suggests that the prediction problem given to the linear kernel SVM is non-trivial. "}
+non_corp <- Corpus(VectorSource(tweets_non$text))
+non <- tm_map(non_corp, content_transformer(tolower))
+non <- tm_map(non, stripWhitespace)
+non <- tm_map(non, removePunctuation)
+non <- tm_map(non, removeWords, c(stopwords("english"), "get", "'m", "'ve", "y'", "'", "'s", "'re"))
+non <- tm_map(non, stemDocument)
+nonword <- wordcloud(non, max.words = 100)
+### Try Naive Bayes and then call it quits ###
+### Or try a string kernel ###
+```
+
+[^1]: I hope, going forward, to make use of Kate Lyons' excellent Codepoint-R Encoding-Description [Emoji dictionary](https://lyons7.github.io/portfolio/2017-10-04-emoji-dictionary/), which replaces character encodings of emojis with plain text descriptions of the characters for ease of interpretation and visualization in text classifier plots. As of yet, though, the encoding in which I downloaded the emojis cannot be converted to a format that is in her dictionary.
