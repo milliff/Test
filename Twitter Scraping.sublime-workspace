@@ -1,0 +1,448 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"acc",
+				"access_token_secret"
+			],
+			[
+				"con",
+				"consumer_secret"
+			],
+			[
+				"consu",
+				"consumer_key"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "twitter-scrape-master/scraper.py",
+			"settings":
+			{
+				"buffer_size": 3226,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "twitter-scrape-master/terminal.glue",
+			"settings":
+			{
+				"buffer_size": 1,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 239.0,
+		"last_filter": "insta",
+		"selected_items":
+		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Discover Packages"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"pack",
+				"Package Control: Install Package"
+			],
+			[
+				" package install",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 444.0
+	},
+	"console":
+	{
+		"height": 131.0,
+		"history":
+		[
+			"glue",
+			"ls",
+			"glue",
+			"<command> [option",
+			"glue",
+			"glue path",
+			"glue",
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master"
+	],
+	"file_history":
+	[
+		"/Users/aidanmilliff/Library/Application Support/Sublime Text 3/Packages/User/Glue.sublime-settings",
+		"/Users/aidanmilliff/Library/Application Support/Sublime Text 3/Packages/Glue/messages/help.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/scraper.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/dump.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/settings.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/private.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/README.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/Tweepy_v2.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/twitter-scrape-master/requirements.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Data/Tweepy_v1.py",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/test.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Notes/Recitation9.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/95.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/101.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/97a.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/96.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/96-1.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/91.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/90.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/89.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/83.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/81.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/80.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/78.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/75.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/74.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/73.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/68.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/65.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/63.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/59.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/52.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/33.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/30.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/27.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/24.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/19.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/15.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/10.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/1.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/23.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/21.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Notes/Recitation8.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/EmoBank-master/README.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/EmoBank-master/corpus/README.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Jan9-2012-tweets-clean.txt",
+		"/Users/aidanmilliff/Downloads/Facts before Feelings- Theorizing Emotional Responses to Violent Trauma_FC Comments.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Notes/Recitation6.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Draft 1/Presentation Feedback2.md",
+		"/Library/Frameworks/R.framework/Versions/3.4/Resources/etc/Renviron",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/Project Meeting Notes",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/TXT Files/22.txt",
+		"/Users/aidanmilliff/Downloads/trial/README",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.483 - US Military Power/Notes from meeting with Barry.",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Draft 1/Presentation Feedback.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/LaTeX Directory/SV Miller R Markdown Templates/README.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/test/README",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Project/trial/README",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.483 - US Military Power/Proposal.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/PML Workshops/SSH:AWS Workshop.md",
+		"/Users/aidanmilliff/Downloads/Map_of_Doklam_EN.svg",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Notes/Recitation4.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Notes/Recitation3.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Draft 1/Notes for Draft1",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/1.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/15.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/33.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/52.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/73.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/75.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/81.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/90.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/95.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/97a.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/10.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/19.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/21.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/22.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/23.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/24.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/27.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/30.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/59.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/63.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/65.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/68.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/74.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/78.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/80.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/83.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/89.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/91.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/96-1.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/96.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/101.txt",
+		"/Volumes/Python 2.7/ReadMe.txt",
+		"/Volumes/Python 2.7/License.txt",
+		"/Volumes/Python 2.7/Build.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Psets/MILLIFF_PS1.2.cpp",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/PML Workshops/learn_to_scrape-master/README.md",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/75 Backup.txt",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.962 - 2YP/Chicago/Output/TXT Files/73 (wo father).txt",
+		"/Users/aidanmilliff/Library/Application Support/Sublime Text 3/Packages/WordCount/WordCount.sublime-settings",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Recitation 1",
+		"/Users/aidanmilliff/Dropbox (MIT)/2018 Spring/17.806 - Quant IV/Lecture 3 Notes.md"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "twitter-scrape-master/scraper.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"WordCount":
+							{
+								"changes": -1,
+								"modified": true,
+								"selection": true,
+								"status": -1,
+								"syntax": "python"
+							},
+							"git_gutter_is_enabled": false,
+							"incomplete_sync": null,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "twitter-scrape-master/terminal.glue",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"WordCount":
+							{
+								"changes": 0,
+								"count": 0,
+								"modified": false,
+								"selection": false,
+								"status": -1,
+								"syntax": "plain text"
+							},
+							"git_gutter_is_enabled": false,
+							"remote_loading": false,
+							"synced": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 36.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 103.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.sftp":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "Twitter Scraping.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
